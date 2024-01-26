@@ -1,8 +1,3 @@
-tkinter
 psutil
-time
 py_cpuinfo
 matplotlib
-numpy
-time
-datetime
