@@ -20,12 +20,12 @@ def cpu_utilization():
     idle_utilization = cpu_times.idle
 
     # Calculate averages and peaks
-    user_avg = np.mean(user_data) if len(user_data) > 0 else 0
-    system_avg = np.mean(system_data) if len(system_data) > 0 else 0
-    idle_avg = np.mean(idle_data) if len(idle_data) > 0 else 0
-    user_peak = np.max(user_data) if len(user_data) > 0 else 0
-    system_peak = np.max(system_data) if len(system_data) > 0 else 0
-    idle_peak = np.min(idle_data) if len(idle_data) > 0 else 0
+    user_avg = np.mean(user_data[-174:]) if len(user_data) > 0 else 0
+    system_avg = np.mean(system_data[-174:]) if len(system_data) > 0 else 0
+    idle_avg = np.mean(idle_data[-174:]) if len(idle_data) > 0 else 0
+    user_peak = np.max(user_data[-174:]) if len(user_data) > 0 else 0
+    system_peak = np.max(system_data[-174:]) if len(system_data) > 0 else 0
+    idle_peak = np.min(idle_data[-174:]) if len(idle_data) > 0 else 0
 
     return f"""{CPU_NAME}
             User: {user_utilization:.1f}% (Avg: {user_avg:.1f}%, Peak: {user_peak:.1f}%)
@@ -37,8 +37,8 @@ def gpu_utilization():
     gpus = GPUtil.getGPUs()
     gpu_utilizations = [gpu.load * 100 for gpu in gpus]
     gpu_names = [gpu.name for gpu in gpus]
-    gpu_avg = np.mean(gpu_data) if len(gpu_data) > 0 else 0
-    gpu_peak = np.max(gpu_data) if len(gpu_data) > 0 else 0
+    gpu_avg = np.mean(gpu_data[-174:]) if len(gpu_data) > 0 else 0
+    gpu_peak = np.max(gpu_data[-174:]) if len(gpu_data) > 0 else 0
 
     return f"""{gpu_names[0]}
             Utilization: {gpu_utilizations[0]:.1f}% (Avg: {gpu_avg:.1f}%, Peak: {gpu_peak:.1f}%)"""
@@ -133,12 +133,10 @@ while True:
 
     # Clear the CPU plot
     ax_cpu.clear()
-    
+
     ax_cpu.set_xlim(
         [
-            0
-            if time.time() - start_time < 30
-            else time.time() - start_time - 30,
+            0 if time.time() - start_time < 30 else time.time() - start_time - 30,
             max(time.time() - start_time, 30),
         ]
     )
@@ -161,12 +159,10 @@ while True:
 
     # Clear the GPU plot
     ax_gpu.clear()
-    
+
     ax_gpu.set_xlim(
         [
-            0
-            if time.time() - start_time < 30
-            else time.time() - start_time - 30,
+            0 if time.time() - start_time < 30 else time.time() - start_time - 30,
             max(time.time() - start_time, 30),
         ]
     )
@@ -189,6 +185,8 @@ while True:
 
     # Update the Tkinter window
     window.update()
+    
+    print(f"{len(gpu_data)} at {time.time() - start_time} seconds") # Debug purposes
 
     # Pause for a short duration
     time.sleep(0.1)
