@@ -2,15 +2,12 @@
 
 import time
 
+def length_limiter(start_time):
+    return 0 if time.time() - start_time < 30 else time.time() - start_time - 30, max(time.time() - start_time, 30)
+
 def create_cpu_plot(fig_cpu, ax_cpu, timestamps, system_data, user_data, start_time):
     ax_cpu.clear()
-
-    ax_cpu.set_xlim(
-        [
-            0 if time.time() - start_time < 30 else time.time() - start_time - 30,
-            max(time.time() - start_time, 30),
-        ]
-    )
+    ax_cpu.set_xlim(length_limiter(start_time))
     ax_cpu.invert_xaxis()
     ax_cpu.set_ylim([None, 100])
     ax_cpu.yaxis.set_label_position("right")
@@ -28,12 +25,7 @@ def create_cpu_plot(fig_cpu, ax_cpu, timestamps, system_data, user_data, start_t
 def create_gpu_plot(fig_gpu, ax_gpu, timestamps, gpu_data, start_time):
     ax_gpu.clear()
 
-    ax_gpu.set_xlim(
-        [
-            0 if time.time() - start_time < 30 else time.time() - start_time - 30,
-            max(time.time() - start_time, 30),
-        ]
-    )
+    ax_gpu.set_xlim(length_limiter(start_time))
     ax_gpu.set_ylim([None, 100])
 
     # Plot GPU utilization

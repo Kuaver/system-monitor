@@ -19,12 +19,12 @@ def create_top_frame(window):
     return top_frame
 
 def create_cpu_label(top_frame):
-    cpu_label = tk.Label(top_frame, text="", font=("Arial", 12), width=60)
+    cpu_label = tk.Label(top_frame, text="", font=("Arial", 12), width=65, justify="left", anchor="w")
     cpu_label.grid(column=0, row=0)
     return cpu_label
 
 def create_gpu_label(top_frame):
-    gpu_label = tk.Label(top_frame, text="", font=("Arial", 12), width=60)
+    gpu_label = tk.Label(top_frame, text="", font=("Arial", 12), width=45, justify="left", anchor="w")
     gpu_label.grid(column=1, row=0)
     return gpu_label
 
