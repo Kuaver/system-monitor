@@ -7,6 +7,9 @@ from gui import create_window, create_frame, create_label, create_canvas
 from graphs import create_cpu_plot, create_gpu_plot
 import matplotlib.pyplot as plt
 from tkinter import BOTTOM, TOP, LEFT, RIGHT
+from GPUtil import getGPUs
+
+has_compatible_gpu = len(getGPUs()) != 0
 
 def on_close():
     window.quit()
@@ -26,10 +29,12 @@ def append_data(data_array, new_data):
 def update_plots_and_labels(cpu_data, gpu_data, timestamps, start_time):
     create_cpu_plot(fig_cpu, ax_cpu, timestamps, cpu_data['system'], cpu_data['user'], start_time)
     canvas_cpu.draw()
-    create_gpu_plot(fig_gpu, ax_gpu, timestamps, gpu_data, start_time)
-    canvas_gpu.draw()
     cpu_label.config(text="\n".join(cpu_utilization_data))
-    gpu_label.config(text="\n".join(gpu_utilization_data))
+    
+    if has_compatible_gpu:
+        gpu_label.config(text="\n".join(gpu_utilization_data))
+        create_gpu_plot(fig_gpu, ax_gpu, timestamps, gpu_data, start_time)
+        canvas_gpu.draw()
 
 # Initialize data arrays
 data_arrays = {
@@ -45,11 +50,13 @@ window = create_window(on_close)
 main_frame = create_frame(window = window, side = BOTTOM)
 top_frame = create_frame(window = window, side = TOP)
 cpu_label = create_label(frame = top_frame, width = 65, column = 0, row = 0)
-gpu_label = create_label(frame = top_frame, width = 45, column = 1, row = 0)
 fig_cpu, ax_cpu = create_plot_figure()
-fig_gpu, ax_gpu = create_plot_figure()
 canvas_cpu = create_canvas(fig = fig_cpu, frame = main_frame, side = LEFT)
-canvas_gpu = create_canvas(fig = fig_gpu, frame = main_frame, side = RIGHT)
+
+if has_compatible_gpu:
+    gpu_label = create_label(frame = top_frame, width = 45, column = 1, row = 0)
+    fig_gpu, ax_gpu = create_plot_figure()
+    canvas_gpu = create_canvas(fig = fig_gpu, frame = main_frame, side = RIGHT)
 
 # Start gathering and plotting data
 start_time = time.time()
@@ -58,12 +65,16 @@ loop_count = 0
 
 while True:
     cpu_utilization_data = cpu_utilization(data_arrays['user'], data_arrays['system'], data_arrays['idle'], increments_per_thirty_seconds = loop_count).split("\n")
-    gpu_utilization_data = gpu_utilization(data_arrays['gpu'], increments_per_thirty_seconds = loop_count).split("\n")
+    if has_compatible_gpu:
+        gpu_utilization_data = gpu_utilization(data_arrays['gpu'], increments_per_thirty_seconds = loop_count).split("\n")
 
     data_arrays['user'] = append_data(data_arrays['user'], parse_utilization_data(cpu_utilization_data[1]))
     data_arrays['system'] = append_data(data_arrays['system'], parse_utilization_data(cpu_utilization_data[2]))
     data_arrays['idle'] = append_data(data_arrays['idle'], parse_utilization_data(cpu_utilization_data[3]))
-    data_arrays['gpu'] = append_data(data_arrays['gpu'], parse_utilization_data(gpu_utilization_data[1]))
+    
+    if has_compatible_gpu:
+        data_arrays['gpu'] = append_data(data_arrays['gpu'], parse_utilization_data(gpu_utilization_data[1]))
+        
     data_arrays['timestamps'] = append_data(data_arrays['timestamps'], time.time() - start_time)
 
     update_plots_and_labels(data_arrays, data_arrays['gpu'], data_arrays['timestamps'], start_time)
