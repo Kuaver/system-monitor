@@ -11,38 +11,20 @@ def create_window(on_close):
     window.resizable(width=False, height=False)
     return window
 
-def create_top_frame(window):
-    top_frame = tk.Frame(window, padx=10, pady=10)
-    top_frame.pack(side=tk.TOP)
-    top_frame.columnconfigure(0, weight=0)
-    top_frame.columnconfigure(0, weight=0)
-    return top_frame
+def create_frame(window, side, padx=10, pady=10):
+    frame = tk.Frame(window, padx=padx, pady=pady)
+    frame.pack(side=side)
+    frame.columnconfigure(0, weight=0)
+    frame.columnconfigure(0, weight=0)
+    return frame
 
-def create_cpu_label(top_frame):
-    cpu_label = tk.Label(top_frame, text="", font=("Arial", 12), width=65, justify="left", anchor="w")
-    cpu_label.grid(column=0, row=0)
-    return cpu_label
+def create_label(frame, width, column, row):
+    label = tk.Label(frame, text="", font=("Arial", 12), width=width, justify="left", anchor="w")
+    label.grid(column=column, row=row)
+    return label
 
-def create_gpu_label(top_frame):
-    gpu_label = tk.Label(top_frame, text="", font=("Arial", 12), width=45, justify="left", anchor="w")
-    gpu_label.grid(column=1, row=0)
-    return gpu_label
-
-def create_main_frame(window):
-    main_frame = tk.Frame(window, padx=10, pady=10)
-    main_frame.pack(side=tk.BOTTOM)
-    main_frame.columnconfigure(0, weight=0)
-    main_frame.columnconfigure(0, weight=0)
-    return main_frame
-
-def create_cpu_canvas(fig_cpu, main_frame):
-    canvas_cpu = FigureCanvasTkAgg(fig_cpu, master=main_frame)
-    canvas_cpu.draw()
-    canvas_cpu.get_tk_widget().pack(side=tk.LEFT, expand=False)
-    return canvas_cpu
-
-def create_gpu_canvas(fig_gpu, main_frame):
-    canvas_gpu = FigureCanvasTkAgg(fig_gpu, master=main_frame)
-    canvas_gpu.draw()
-    canvas_gpu.get_tk_widget().pack(side=tk.RIGHT, expand=False)
-    return canvas_gpu
+def create_canvas(fig, frame, side):
+    canvas = FigureCanvasTkAgg(fig, master=frame)
+    canvas.draw()
+    canvas.get_tk_widget().pack(side=side, expand=False)
+    return canvas
