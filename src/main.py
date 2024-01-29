@@ -73,6 +73,4 @@ while True:
     loop_times.append(time.time() - start_time)
     loop_count = len(loop_times)
 
-    loop_times = [t for t in loop_times if t >= loop_times[-1] - 30]
-
-    print("Number of loops in the last 30 seconds:", loop_count)
+    loop_times = [num for num in loop_times if num >= loop_times[-1] - 30]
